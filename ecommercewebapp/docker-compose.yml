@@ -1,21 +1,21 @@
 services:
   db:
     image: postgres:18
-    container_name: ecommwebapp-db
-    restart: unless-stopped
+    container_name: ecommercewebapp-db
     environment:
       POSTGRES_DB: ecommerce_site_2
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: P@ssw0rd123
-    volumes:
-      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U postgres -d ecommerce_site_2
+      timeout: 5s
+      interval: 5s
+      retries: 5
     ports:
       - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d ecommerce_site_2"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+    restart: unless-stopped
 
   app:
     build: .
@@ -31,17 +31,17 @@ services:
     ports:
       - "8084:8080"
 
-    pgadmin:
-      image: dpage/pgadmin4
-      container_name: pgadmin
-      restart: unless-stopped
-      environment:
-        PGADMIN_DEFAULT_EMAIL: admin@adlab.local
-        PGADMIN_DEFAULT_PASSWORD: ChangeMe123!
-      ports:
-        - "8081:80"
-      depends_on:
-        - db
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@adlab.local
+      PGADMIN_DEFAULT_PASSWORD: ChangeMe123!
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
 
 volumes:
   pgdata:
