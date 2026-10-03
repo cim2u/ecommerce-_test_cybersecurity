@@ -31,5 +31,17 @@ services:
     ports:
       - "8084:8080"
 
+    pgadmin:
+      image: dpage/pgadmin4
+      container_name: pgadmin
+      restart: unless-stopped
+      environment:
+        PGADMIN_DEFAULT_EMAIL: admin@adlab.local
+        PGADMIN_DEFAULT_PASSWORD: ChangeMe123!
+      ports:
+        - "8081:80"
+      depends_on:
+        - db
+
 volumes:
   pgdata:
